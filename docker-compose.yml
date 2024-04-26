@@ -1,0 +1,42 @@
+version: '1'
+services:
+  mongodb-service:
+    image: mongo:5.0
+    container_name: mongodb-service
+    ports:
+      - 27017:27017
+    networks:
+      - appnetwork
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+
+  backend:
+    image: brahim02/backend:1.0.0
+    container_name: backend
+    networks:
+      - appnetwork
+    ports:
+      - 5000:5000
+    depends_on:
+      - mongodb-service
+
+  frontend:
+    image: brahim02/frontend:1.0.0
+    container_name: frontend
+    networks:
+      - appnetwork
+    ports:
+      - 3000:80
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  appnetwork:
+    driver: bridge
